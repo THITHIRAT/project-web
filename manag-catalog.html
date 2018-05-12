@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <!-- Tell the browser to be responsive to screen width -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <!-- Favicon icon -->
+    <link rel="icon" type="image/png" sizes="16x16" href="images/favicon.png">
+    <title>Catalog Management</title>
+    <!-- Bootstrap Core CSS -->
+    <link href="css/lib/bootstrap/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="css/helper.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.1/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.11/css/jquery.dataTables.min.css" />
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.2.2/css/buttons.dataTables.min.css" />
+    <link rel="stylesheet" href="https://cdn.datatables.net/select/1.2.2/css/select.dataTables.min.css" />
+    <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.0.2/css/responsive.dataTables.min.css" />
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:** -->
+    <!--[if lt IE 9]>
+    <script src="https:**oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https:**oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+<![endif]-->
+    <script src="js/lib/jquery/jquery.min.js"></script>
+    <!-- Bootstrap tether Core JavaScript -->
+    <script src="js/lib/bootstrap/js/popper.min.js"></script>
+    <script src="js/lib/bootstrap/js/bootstrap.min.js"></script>
+    <!-- slimscrollbar scrollbar JavaScript -->
+    <script src="js/jquery.slimscroll.js"></script>
+    <!--Menu sidebar -->
+    <script src="js/sidebarmenu.js"></script>
+    <!--stickey kit -->
+    <script src="js/lib/sticky-kit-master/dist/sticky-kit.min.js"></script>
+    <!--Custom JavaScript -->
+    <script src="js/custom.min.js"></script>
+    <script src="js/lib/datatables/datatables.min.js"></script>
+    <!-- <script src="js/lib/datatables/cdn.datatables.net/buttons/1.2.2/js/dataTables.buttons.min.js"></script>
+    <script src="js/lib/datatables/cdn.datatables.net/buttons/1.2.2/js/buttons.flash.min.js"></script>
+    <script src="js/lib/datatables/cdnjs.cloudflare.com/ajax/libs/jszip/2.5.0/jszip.min.js"></script>
+    <script src="js/lib/datatables/cdn.rawgit.com/bpampuch/pdfmake/0.1.18/build/pdfmake.min.js"></script>
+    <script src="js/lib/datatables/cdn.rawgit.com/bpampuch/pdfmake/0.1.18/build/vfs_fonts.js"></script>
+    <script src="js/lib/datatables/cdn.datatables.net/buttons/1.2.2/js/buttons.html5.min.js"></script>
+    <script src="js/lib/datatables/cdn.datatables.net/buttons/1.2.2/js/buttons.print.min.js"></script>
+    <script src="js/lib/datatables/datatables-init.js"></script> -->
+</head>
+
+<body class="fix-header fix-sidebar">
+    <script>
+        $(document).ready(function () {
+
+            $("#AddItem").click(function (e) {
+                e.preventDefault()
+                console.log(document.getElementById("type").value)
+                console.log(document.getElementById("item").value)
+                console.log(document.getElementById("period_num").value)
+                console.log(document.getElementById("period_type_date").value)
+                $.post("http://161.246.6.1:8088/catalog/add",
+                    {
+                        "type": document.getElementById("type").value,
+                        "item": document.getElementById("item").value,
+                        "period_num": document.getElementById("period_num").value,
+                        "period_type_date": document.getElementById("period_type_date").value
+                    },
+                    function (data, status) {
+                        console.log("status" + status + " data status: " + data.status + " data: " + data.msg)
+                        if (data.status == 400) {
+                            alert("this item have available in system\n" + "Pleas add new item")
+                        }
+                        location.reload()
+                    });
+            });
+            $("#EDIT").click(function (e) {
+                console.log('edit work')
+                e.preventDefault()
+                $.post("http://161.246.6.1:8088/catalog/edit",
+                    {
+                        "catalog_id":localStorage.getItem("editID"),
+                        "type_new": document.getElementById("editType").value,
+                        "item_new": document.getElementById("editItem").value,
+                        "period_num_new": document.getElementById("editPeriod_num").value,
+                        "period_type_date_new": document.getElementById("editPeriod_type_date").value
+                    },
+                    function (data, status) {
+                        console.log("status" + status + " data status: " + data.status + " data: " + data.msg)
+                        if (data.status == 400) {
+                            alert("Pleas complete the form")
+                        }
+                        location.reload()
+                    });
+            });
+            $('#DELETE').click(function(e){
+                console.log("delete work!")
+                e.preventDefault()
+                $.post("http://161.246.6.1:8088/catalog/remove",
+                    {
+                        "catalog_id": localStorage.getItem("editID")
+                    },
+                    function (data, status) {
+                        console.log("status" + status + " data status: " + data.status + " data: " + data.msg)
+                        if (data.status == 400) {
+                            alert("Pleas complete the form")
+                        }
+                        location.reload()
+                    });
+            })
+
+        });
+    </script>
+    <!-- Preloader - style you can find in spinners.css -->
+    <div class="preloader">
+        <svg class="circular" viewBox="25 25 50 50">
+            <circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="2" stroke-miterlimit="10" /> </svg>
+    </div>
+    <!-- Main wrapper  -->
+    <div id="main-wrapper">
+        <!-- header header  -->
+        <div class="header">
+            <nav class="navbar top-navbar navbar-expand-md navbar-light">
+                <!-- Logo -->
+                <div class="navbar-header">
+                    <a class="navbar-brand" href="index.html">
+                        <!-- Logo icon -->
+                        <b>
+                            <img src="images/logo.png" alt="homepage" class="dark-logo" />
+                        </b>
+                        <!--End Logo icon -->
+                        <!-- Logo text -->
+                        <span>
+                            <img src="images/logo-text.png" alt="homepage" class="dark-logo" />
+                        </span>
+                    </a>
+                </div>
+                <!-- End Logo -->
+                <div class="navbar-collapse">
+                    <!-- toggle and nav items -->
+                    <ul class="navbar-nav mr-auto mt-md-0">
+                        <!-- This is  -->
+                        <li class="nav-item">
+                            <a class="nav-link nav-toggler hidden-md-up text-muted  " href="javascript:void(0)">
+                                <i class="mdi mdi-menu"></i>
+                            </a>
+                        </li>
+                        <li class="nav-item m-l-10">
+                            <a class="nav-link sidebartoggler hidden-sm-down text-muted  " href="javascript:void(0)">
+                                <i class="ti-menu"></i>
+                            </a>
+                        </li>
+                        <!-- Messages -->
+                        <!-- End Comment -->
+                        <!-- Messages -->
+                        <!-- End Messages -->
+                    </ul>
+                    <!-- User profile and search -->
+                    <ul class="navbar-nav my-lg-0">
+
+                        <!-- Search -->
+                        <li class="nav-item hidden-sm-down search-box">
+                            <a class="nav-link hidden-sm-down text-muted  " href="javascript:void(0)">
+                                <i class="ti-search"></i>
+                            </a>
+                            <form class="app-search">
+                                <input type="text" class="form-control" placeholder="Search here">
+                                <a class="srh-btn">
+                                    <i class="ti-close"></i>
+                                </a>
+                            </form>
+                        </li>
+                        <!-- Profile -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle text-muted  " href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <img src="images/users/5.jpg" alt="user" class="profile-pic" />
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-right animated zoomIn">
+                                <ul class="dropdown-user">
+                                    <li>
+                                        <a href="#">
+                                            <i class="ti-user"></i> Profile</a>
+                                    </li>
+                                    <li>
+                                        <a href="#">
+                                            <i class="ti-settings"></i> Setting</a>
+                                    </li>
+                                    <li>
+                                        <a href="page-login.html">
+                                            <i class="fa fa-power-off"></i> Logout</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </div>
+        <!-- End header header -->
+        <!-- Left Sidebar  -->
+        <div class="left-sidebar">
+            <!-- Sidebar scroll-->
+            <div class="scroll-sidebar">
+                <!-- Sidebar navigation-->
+                <nav class="sidebar-nav">
+                    <ul id="sidebarnav">
+                        <li class="nav-devider"></li>
+                        <li class="nav-label">Home</li>
+                        <li>
+                            <a href="index.html" aria-expanded="false">
+                                <i class="fa fa-tachometer">Dashboard</i>
+                        </li>
+
+                        <li>
+                            <a class="has-arrow  " href="#" aria-expanded="false">
+                                <i class="fa fa-table"></i>
+                                <span class="hide-menu">Tables</span>
+                            </a>
+                            <ul aria-expanded="false" class="collapse">
+                                <li>
+                                    <a href="table-catalog.html">Catalog table</a>
+                                </li>
+                                <il>
+                                    <a href="table-location.html">Location Table</a>
+                                </il>
+                            </ul>
+                        </li>
+                        <li>
+                            <a class="has-arrow  " href="#" aria-expanded="false">
+                                <i class="fa fa-columns"></i>
+                                <span class="hide-menu">Management</span>
+                            </a>
+                            <ul aria-expanded="false" class="collapse">
+
+                                <li>
+                                    <a href="manag-catalog.html">Catalog</a>
+                                </li>
+                                
+                            </ul>
+                        </li>
+                    </ul>
+                </nav>
+                <!-- End Sidebar navigation -->
+            </div>
+            <!-- End Sidebar scroll-->
+        </div>
+        <!-- End Left Sidebar  -->
+        <!-- Page wrapper  -->
+        <div class="page-wrapper">
+            <!-- Bread crumb -->
+            <div class="row page-titles">
+                <div class="col-md-5 align-self-center">
+                    <h3 class="text-primary">Management</h3>
+                </div>
+                <div class="col-md-7 align-self-center">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item">
+                            <a href="javascript:void(0)">Home</a>
+                        </li>
+                        <li class="breadcrumb-item active">
+                            <a href="index.html">Dashboard</a>
+                        </li>
+                    </ol>
+                </div>
+            </div>
+            <!-- End Bread crumb -->
+            <!-- Container fluid  -->
+            <div class="container-fluid">
+                <!-- Start Page Content -->
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">Catalog Management </h4>
+
+                        <div class="table-responsive m-t-40">
+                            <div class="card-content">
+                                <div class="toastr m-t-15">
+                                    <div class="text-left">
+                                        <button type="botton" class="btn btn-success m-b-10 m-l-5" id="toastr-success-top-left" data-toggle="modal" data-target="#exampleModal">ADD</button>
+                                        <!-- Modal ADD -->
+                                        <table id="myTable" class="table table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th>ID</th>
+                                                    <th>Type</th>
+                                                    <th>item</th>
+                                                    <th>Period</th>
+                                                    <th>Unit</th>
+
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                            </tbody>
+                                        </table>
+                                        <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                            <div class="modal-dialog" role="document">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h3 id="exampleModalLabel">Add Catalog</h3>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <form class="form p-t-20">
+                                                            <div class="form-group">
+                                                                <label for="type">Type:</label>
+                                                                <select class="form-control" id="type">
+                                                                    <option>Fresh Food</option>
+                                                                    <option>Pantry Food</option>
+                                                                    <option>Skin Care</option>
+                                                                    <option>Home Appliances</option>
+                                                                    <option>Battery</option>
+                                                                </select>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label for="item">Item Name</label>
+                                                                <div class="input-group">
+                                                                    <input type="text" class="form-control" id="item" placeholder="Enter item name">
+
+                                                                </div>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label for="period_num">Period</label>
+                                                                <div class="input-group">
+                                                                    <input type="number" class="form-control" id="period_num" placeholder="Enter Period">
+                                                                </div>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label for="period_type_date">Unit</label>
+                                                                <div class="input-group">
+                                                                    <input type="text" class="form-control" id="period_type_date" placeholder="Enter days or months or years">
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="Modal-footer">
+                                                                <button type="botton" class="btn btn-success waves-effect waves-light m-r-10" id="AddItem">Add</button>
+                                                                <button type="botton" class="btn btn-inverse waves-effect waves-light">Cancel</button>
+                                                            </div>
+                                                        </form>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                        <!--EDIT MODAL-->
+                                        <div id="editModal" class="modal fade" role="dialog" aria-labelledby="myModal1" aria-hidden="true">
+                                            <div class="modal-dialog" role="document">
+                                                <!-- Modal content-->
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h4>Edit Catalog</h4>
+
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <form class="form p-t-20">
+                                                            <div class="form-group">
+                                                                <label for="type">Type:</label>
+                                                                <select class="form-control" id="editType">
+                                                                    <option>Fresh Food</option>
+                                                                    <option>Pantry Food</option>
+                                                                    <option>Skin Care</option>
+                                                                    <option>Home Appliances</option>
+                                                                    <option>Battery</option>
+                                                                </select>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label for="item">Item Name</label>
+                                                                <div class="input-group">
+                                                                    <input type="text" class="form-control" id="editItem">
+
+                                                                </div>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label for="period_num">Period</label>
+                                                                <div class="input-group">
+                                                                    <input type="number" class="form-control" id="editPeriod_num">
+                                                                </div>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label for="period_type_date">Unit</label>
+                                                                <div class="input-group">
+                                                                    <input type="text" class="form-control" id="editPeriod_type_date">
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="Modal-footer">
+                                                                <button type="botton" class="btn btn-success waves-effect waves-light m-r-10" id="EDIT">EDIT</button>
+                                                                <button type="botton" class="btn btn-danger" id="DELETE">DELETE</button>
+                                                            </div>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                    <!-- End PAge Content -->
+                </div>
+                <!-- End Container fluid  -->
+                <!-- footer -->
+                <footer class="footer"> © 2018 All rights reserved. Template designed by
+                    <a href="https://colorlib.com">Colorlib</a>
+                </footer>
+                <!-- End footer -->
+            </div>
+            <!-- End Page wrapper  -->
+        </div>
+        <!-- End Wrapper -->
+        <!-- <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>  -->
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
+        <script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+        <script src="https://cdn.datatables.net/buttons/1.1.2/js/dataTables.buttons.min.js"></script>
+        <script src="https://cdn.datatables.net/select/1.1.2/js/dataTables.select.min.js"></script>
+        <script src="https://cdn.datatables.net/responsive/2.0.2/js/dataTables.responsive.min.js"></script>
+
+        <!-- <script src="js/altEditor/dataTables.altEditor.free.js"></script> -->
+
+
+        <script>
+            $('#exampleModal').on('show.bs.modal', function (event) {
+                var button = $(event.relatedTarget) // Button that triggered the modal
+                var recipient = button.data('whatever') // Extract info from data-* attributes
+                // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
+                // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
+                var modal = $(this)
+                modal.find('.modal-title').text('New message to ' + recipient)
+                modal.find('.modal-body input').val(recipient)
+            })
+        </script>
+        <script>
+            $(document).ready(function () {
+                $.post("http://161.246.6.1:8088/catalog/showcatalog", function (data) {
+                    console.log(data.data)
+                    var dataSet = data.data
+
+                    var table = $('#myTable').DataTable({
+                        data: dataSet,
+                        columns: [
+                            { data: "_id" },
+                            { data: "type" },
+                            { data: "item" },
+                            { data: "period_num" },
+                            { data: "period_type_date" }
+                        ]
+                    });
+                })
+
+                // $("#myTable tbody").on('click', 'tr', function () {
+                //     console.log(table.row(this).data())
+                // });
+                $("editItem").attr("reqquired",true)
+                var tableData = document.getElementById("myTable");
+                var tbody = tableData.getElementsByTagName("tbody")[0];
+                tbody.onclick = function (e) {
+                    e = e || window.event;
+                    var data = [];
+                    var target = e.srcElement || e.target;
+                    while (target && target.nodeName !== "TR") {
+                        target = target.parentNode;
+                    }
+                    if (target) {
+                        var cells = target.getElementsByTagName("td");
+                        for (var i = 0; i < cells.length; i++) {
+                            data.push(cells[i].innerHTML);
+                        }
+                    }
+                    console.log(data)
+                    localStorage.setItem("editID", data[0]);
+                    console.log(localStorage.getItem("editID"))
+                    $("#editType").val(data[1])
+                    $("#editItem").val(data[2])
+                    $("#editPeriod_num").val(data[3])
+                    $("#editPeriod_type_date").val(data[4])
+                    $('#editModal').modal('show');
+                };
+
+            })
+        </script>
+</body>
+
+</html>
