@@ -12,8 +12,8 @@
     <link rel="icon" type="image/png" sizes="16x16" href="images/favicon.png">
     <title>Catalog Detail</title>
     <!-- Bootstrap Core CSS -->
+    <link href="css/mdb.min.css" rel="stylesheet">
     <link href="css/lib/bootstrap/bootstrap.min.css" rel="stylesheet">
-    <!-- <link href="css/mdb.min.css" rel="stylesheet"> -->
     <!-- Custom CSS -->
     <link href="css/helper.css" rel="stylesheet">
     <link href="css/style.css" rel="stylesheet">
@@ -181,7 +181,7 @@
             <div class="container-fluid">
                 <!-- Start Page Content -->
                 <div class="card-body">
-                    <div class="table-responsive m-t-40">
+                    <div class="table-responsive">
                         <table class="table table-striped table-bordered" id="summaryTable">
                             <thead>
                                 <tr>
@@ -208,18 +208,25 @@
                                         <div class="modal-body">
                                             <div class="form-check">
                                                 <input name="102" type="radio" class="with-gap" id="Avg">
-                                                <label for="radio106">Avg </label>
-                                                <span id="avg"></span>
+                                                <label for="radio106">Avg</label>
                                             </div>
 
                                             <div class="form-check">
                                                 <input name="102" type="radio" class="with-gap" id="Mode" checked>
-                                                <label for="radio107">Mode </label>
-                                                <span id="mode"></span>
+                                                <label for="radio107">Mode</label>
                                             </div>
+                                            <div class="form-check">
+                                                <input name="102" type="radio" class="with-gap" id="custom">
+                                                <label for="radio108">Custom:</label>
+
+                                                <div class="md-form" style="display: inline-block;line-height: 5px; margin-top: -20px;">
+                                                    <input type="text" class="form-control" id="custom">
+                                                </div>
+
+
                                             </div>
                                             <div class="modal-footer">
-                                                <button type="button" class="btn btn-success" data-dismiss="modal" id="update">Update</button>
+                                                <button type="button" class="btn btn-success" data-dismiss="modal">Update</button>
                                                 <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
                                             </div>
                                         </div>
@@ -259,11 +266,11 @@
         <script src="https://cdn.datatables.net/buttons/1.1.2/js/dataTables.buttons.min.js"></script>
         <script src="https://cdn.datatables.net/select/1.1.2/js/dataTables.select.min.js"></script>
         <script src="https://cdn.datatables.net/responsive/2.0.2/js/dataTables.responsive.min.js"></script>
-        <!-- <script src="js/mdb.min.js"></script> -->
+        <script src="js/mdb.min.js"></script>
         <script>
             $(document).ready(function () {
                 console.log(localStorage.getItem("type"))
-                $.post("http://161.246.6.1:8088/catalog/showcatalog",
+                $.post("http://161.246.5.195:3000/catalog/showcatalog",
 
                     function (data) {
                         console.log(data.data)
@@ -273,45 +280,31 @@
                             return elements.type.toLowerCase() == TypeFilter.toLowerCase()
                         })
                         $.each(dataSet, function (index, value) {
-                            var table = "<tr><td>" + value.type + "</td><td>" + value.item + "</td><td>" + value.period_num + "</td><td>" + value.avg + "</td><td>" + value.mode + "</td><td style='text-align:center; width: 150px;'><button onclick='updatePeriod(\"" + value.avg + "\",\"" + value.mode + "\")' id='YourID' data-index=\"" + value._id + "\" class='btn-sm btn-danger btn-rounded m-b-10 m-l-5' data-toggle='modal' data-target='#myModal1'>change</button></td></tr>"
+                            var table = "<tr><td>" + value.type + "</td><td>" + value.item + "</td><td>" + value.period_num + "</td><td>" + value.avg + "</td><td>" + value.mode + "</td><td style='text-align:center; width: 150px;'><button id='YourID' data-index=\"" + value._id + "\" class='btn-sm btn-danger btn-rounded m-b-10 m-l-5' data-toggle='modal' data-target='#myModal1'>change</button></td></tr>"
                             $("#summaryTable tbody").append(table)
                         })
 
                     });
                 $(document).on("click", "#YourID", function () {
-                    var selectedID = $(this).data('index')
-                    $('#update').click(function () {
-                        if (document.getElementById('Avg').checked == true) {
-                            $.post("http://161.246.6.1:8088/catalog/update_avg", 
-                            {
-                                "catalog_id": selectedID
-                            },function(data, status){
-                                console.log(data)
-                                console.log(status)
-                            })
+                    console.log($(this).data('index'))
+                    if (document.getElementById('Avg').checked == true) {
+                        $.post("http://161.246.5.195:3000/catalog/update_avg"), {
+                            "catalog_id": $(this).data('index')
                         }
-                        else if (document.getElementById('Mode').checked == true) {
-                            $.post("http://161.246.6.1:8088/catalog/update_mode", 
-                            {
-                                "catalog_id": selectedID
-                            },function(data, status){
-                                console.log(data)
-                                console.log(status)
-                            })
+                    }
+                    else if(document.getElementById('Mode').checked == true){
+                        $.post("http://161.246.5.195:3000/catalog/update_mode"), {
+                            "catalog_id": $(this).data('index')
                         }
-                        else if (document.getElementById('custom').checked == true) {
-                            console.log("CUSTOM")
+                    }
+                    // else if(document.getElementById('custom').checked == true){
 
-                        }
-                    })
+                    // }
+
+
                 });
 
-                updatePeriod = (avg, mode) => {
-                    document.getElementById("avg").innerHTML = avg;
-                    document.getElementById("mode").innerHTML = mode;
-                    console.log(avg)
-                    console.log(mode)
-                }
+
             });
         </script>
 </body>

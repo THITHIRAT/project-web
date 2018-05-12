@@ -366,9 +366,8 @@
                     document.location.href = "./table-catalog.html"
                 }
                 $(document).ready(function () {
-                    $.post("http://161.246.6.1:8088/catalog/showcatalog", function (data) {
-                        console.log(data)
-                        var type = ["Fresh Food", "Pantry Food", "Skin Care", "Home Appliance", "Battery"]
+                    $.post("http://161.246.5.195:3000/catalog/showcatalog", function (data) {
+                        var type = ["Fresh Food", "Pantry Food", "Health & Beauty", "Home Appliance", "Battery"]
                         $.each(type, function (index, value) {
                             var temp = data.data.filter(function (element) {
                                 return element.type.toLowerCase() === value.toLowerCase()
@@ -394,11 +393,11 @@
                                 modeAvg = modeAvg / check
                             }
 
-                            var result = "<tr><td>" + value + "</td><td>" + periodAvg.toFixed(0) + " " + periodUnit + "</td><td>" + AvgOfAllAvg.toFixed(0) + " " + AvgUnit + "</td><td>" + modeAvg.toFixed(0) + " " + modeUnit + "</td><td><button class='btn-sm btn-success btn-rounded m-b-10 m-l-5' onclick='viewFilter(\"" + value + "\")'>view</button><button class='btn-sm btn-info btn-rounded m-b-10 m-l-5' onclick='getType(\"" + value + "\")'>detail</button></tr>"
+                            var result = "<tr><td>" + value + "</td><td>" + periodAvg.toFixed(0) + " " + periodUnit + "</td><td>" + AvgOfAllAvg.toFixed(0) + " " + AvgUnit + "</td><td>" + modeAvg + " " + modeUnit + "</td><td><button class='btn-sm btn-success btn-rounded m-b-10 m-l-5' onclick='viewFilter(\"" + value + "\")'>view</button><button class='btn-sm btn-info btn-rounded m-b-10 m-l-5' onclick='getType(\"" + value + "\")'>detail</button></tr>"
                             $("#summaryTable tbody").append(result)
                         })
                     })
-                    $.post("http://161.246.6.1:8088/catalog/showlocation", function (response) {
+                    $.post("http://161.246.5.195:3000/catalog/showlocation", function (response) {
                         var data = response.data
                         var temp = {}
                         var result = []
@@ -415,7 +414,6 @@
                         })
                         Object.keys(temp).forEach(key => result.push(temp[key]))
                         console.log('result===', result)
-
                         Morris.Bar({
                             element: 'morris-bar-chart1',
                             data: result,
@@ -425,8 +423,7 @@
                             barColors: ['#26DAD2', '#fc6180', '#4680ff'],
                             hideHover: 'auto',
                             gridLineColor: '#eef0f2',
-                            resize: true,
-                            xLableMargin: 1,
+                            resize: true
                         })
                     })
 

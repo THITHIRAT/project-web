@@ -28,7 +28,7 @@
 <body>
     <script>
         $(document).ready(function () {
-            $.post("http://161.246.6.1:8088/catalog/showlocation", function (data) {
+            $.post("http://161.246.5.195:3000/catalog/showlocation", function (data) {
                 console.log(data)
                 var dataSet = data.data
                 $('#myTable').DataTable({
@@ -36,7 +36,8 @@
                     columns: [
                         { data: "_id" },
                         { data: "placename" },
-                        { data: "notification" }
+                        { data: "notification" },
+                        { data: "start_date" }
                     ],
                     retrieve: true,
                 });
@@ -210,6 +211,7 @@
                                         <th>User</th>
                                         <th>Place</th>
                                         <th>Notic</th>
+                                        <th>Create Date</th>
                                     </tr>
                                 </thead>
                             </table>
